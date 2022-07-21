@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_sale_order_credit_limit" model="ir.ui.view">
+            <field name="name">inherit.sale.order.credit.limit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="available_credit" attrs="{'invisible': [('payment_term_id', 'in', [1,False]) ]}" />
+                    <field name="credit_after_sale" attrs="{'invisible': [('payment_term_id', 'in', [1,False]) ]}" />
+                </xpath>
+                <xpath expr="//notebook" position="before">
+                    <field name="credit_after_sale" attrs="{'invisible': True}"/>
+                    <group attrs="{'invisible': ['|', '|', ('state', '=', 'done'),'|', ('state', '=', 'cancel'), ('payment_term_id', 'in', [1,False]), '&amp;', ('credit_after_sale', '&gt;=', 0), ('payment_term_id', 'not in', [1,False]) , True ]}">
+                        <h3 class="text-center" style="color:red;">
+                            The client doesn't have enought credit to complete this sale
+                        </h3>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

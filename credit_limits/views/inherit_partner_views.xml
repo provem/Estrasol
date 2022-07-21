@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+        <record id="inherit_partner_credit_limit" model="ir.ui.view">
+            <field name="name">inherit.partner.credit.limit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account.view_partner_property_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='property_payment_term_id']" position="before">
+                    <field name="credit_enabled" />
+                </xpath>
+                <xpath expr="//field[@name='property_payment_term_id']" position="after">
+                    <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
+                    <field name="available_credit" widget='monetary' options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('credit_enabled','=', False)]}" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
