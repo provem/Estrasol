@@ -7,10 +7,9 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="account.view_partner_property_form" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='property_payment_term_id']" position="before">
+                <xpath expr="//field[@name='property_product_pricelist']" position="after">
+                    <field name="property_payment_term_id" />
                     <field name="credit_enabled" />
-                </xpath>
-                <xpath expr="//field[@name='property_payment_term_id']" position="after">
                     <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
                     <field name="available_credit" widget='monetary' options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('credit_enabled','=', False)]}" />
                 </xpath>
