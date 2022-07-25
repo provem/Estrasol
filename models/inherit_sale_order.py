@@ -1,4 +1,7 @@
 from odoo import models, fields, api
+import logging
+_logger = logging.getLogger(__name__)
+
 class InheritedSaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -8,7 +11,7 @@ class InheritedSaleOrder(models.Model):
     credit_after_sale = fields.Float(string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
 
     
-    @api.depends('amount_total', 'order_line')
+    @api.depends('amount_total', 'order_line.price_total')
     def _compute_credit_after_sale(self):
         for record in self:
             amount = 0.00
