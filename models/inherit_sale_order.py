@@ -8,11 +8,13 @@ class InheritedSaleOrder(models.Model):
     credit_after_sale = fields.Float(string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
 
     
-    @api.depends('amount_total')
+    @api.depends('amount_total', 'order_line')
     def _compute_credit_after_sale(self):
         for record in self:
-            record.credit_after_sale = record.available_credit - record.amount_total
-
+            amount = 0.00
+            for order in record.order_line:
+                amount += order.price_total
+        record.credit_after_sale = record.available_credit - amount
 
     def write(self, vals):
         if self._context.get('skip'):
