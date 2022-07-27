@@ -11,7 +11,7 @@
                     <field name="property_payment_term_id" />
                     <field name="credit_enabled" />
                     <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
-                    <field name="available_credit" widget='monetary' options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('credit_enabled','=', False)]}" />
+                    <field name="available_credit" attrs="{'invisible':[('credit_enabled','=', False)]}" />
                 </xpath>
             </field>
         </record>
