@@ -4,10 +4,16 @@ class InheritedSaleOrder(models.Model):
 
 
     partner_has_credit = fields.Boolean(related='partner_id.credit_enabled', readonly=True)
-    available_credit = fields.Float(string='Crédito Dispoible',related="partner_id.available_credit", readonly=True, copy=False)
+    available_credit = fields.Float(string='Crédito Dispoible', compute='_compute_available_credit', readonly=True, copy=False, store=True)
     credit_after_sale = fields.Float(string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
 
     
+    @api.depends('partner_id')
+    def _compute_available_credit(self):
+        for record in self:
+            record.available_credit = record.partner_id.available_credit
+
+
     @api.depends('amount_total', 'order_line.price_total')
     def _compute_credit_after_sale(self):
         for record in self:
@@ -29,6 +35,7 @@ class InheritedSaleOrder(models.Model):
     @api.model    
     def create(self, vals):
         res = super(InheritedSaleOrder, self).create(vals)
-        if self.env['res.partner'].search([('id','=',vals['partner_id'])]).credit_enabled:
+        partner = self.env['res.partner'].search([('id','=',vals['partner_id'])]) 
+        if partner.credit_enabled and partner.available_credit > 0:
             res.with_context(skip=False).action_confirm()
         return res
