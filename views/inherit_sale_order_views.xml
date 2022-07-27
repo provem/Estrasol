@@ -7,8 +7,8 @@
             <field name="inherit_id" ref="sale.view_order_form" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='payment_term_id']" position="after">
-                    <field name="available_credit" attrs="{'invisible': [('payment_term_id', 'in', [1,False]) ]}" />
-                    <field name="credit_after_sale" attrs="{'invisible': [('payment_term_id', 'in', [1,False]) ]}" />
+                    <field name="available_credit" attrs="{'invisible': ['&quot;',('payment_term_id', 'in', [1,False]), ('partner_has_credit','=', False) ]}" />
+                    <field name="credit_after_sale" attrs="{'invisible': ['&quot;',('payment_term_id', 'in', [1,False]), ('partner_has_credit','=',False) ]}" />
                 </xpath>
                 <xpath expr="//notebook" position="before">
                     <field name="credit_after_sale" attrs="{'invisible': True}"/>
