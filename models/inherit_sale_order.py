@@ -31,18 +31,21 @@ class InheritedSaleOrder(models.Model):
             for order in record.order_line:
                 amount += order.price_total
         record.credit_after_sale = record.available_credit - amount
-        record.partner_id.available_credit = record.credit_after_sale
 
-    @api.model
+    def write(self, vals):
+        if self._context.get('skip'):
+            return super(InheritedSaleOrder, self).write(vals)
+        if self.state == 'draft' and self.credit_after_sale > 0 and self.partner_has_credit:
+            super(InheritedSaleOrder, self).write(vals)
+            self.with_context(skip=True).action_confirm()
+        else:
+            return super(InheritedSaleOrder, self).write(vals)
+        
+        
+    @api.model    
     def create(self, vals):
         res = super(InheritedSaleOrder, self).create(vals)
-        self.partner_id.available_credit = self.credit_after_sale
+        partner = self.env['res.partner'].search([('id','=',vals['partner_id'])]) 
+        if partner.credit_enabled and partner.available_credit > 0:
+            res.with_context(skip=False).action_confirm()
         return res
-
-
-    @api.model
-    def write(self, vals):
-        res = super(InheritedSaleOrder, self).write(vals)
-        self.partner_id.available_credit = self.credit_after_sale
-        return res
-        
