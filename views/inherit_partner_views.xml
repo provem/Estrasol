@@ -7,11 +7,13 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="product.view_partner_property_form" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='property_product_pricelist']" position="after">
-                    <field name="property_payment_term_id" />
-                    <field name="credit_enabled" />
-                    <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
-                    <field name="available_credit" attrs="{'invisible':[('credit_enabled','=', False)]}" />
+                <xpath expr="//group[@name='sale']" position="after">
+                    <group name="name" string="string">|
+                        <field name="property_payment_term_id" />
+                        <field name="credit_enabled" />
+                        <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
+                        <field name="available_credit" attrs="{'invisible':[('credit_enabled','=', False)]}" />
+                    </group>
                 </xpath>
             </field>
         </record>
