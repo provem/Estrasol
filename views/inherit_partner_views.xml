@@ -5,11 +5,12 @@
             <field name="name">inherit.partner.credit.limit</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="product.view_partner_property_form" />
+            <field name="groups_id" eval="[(4, ref('mx_provem.group_cotizacion'))]"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='property_product_pricelist']" position="after">
                     <field name="property_payment_term_id" />
                     <field name="credit_enabled" />
-                    <field name="credit_limit" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
+                    <field name="credit_limit" widget='monetary' options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('credit_enabled','=', False)], 'readonly': [('property_payment_term_id', 'in', [1,False])]}" />
                     <field name="available_credit" widget='monetary' options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('credit_enabled','=', False)]}" />
                 </xpath>
             </field>

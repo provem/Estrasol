@@ -21,8 +21,6 @@ class InheritedSaleOrder(models.Model):
         for record in self:
             record.available_credit = record.partner_id.available_credit
 
-            _logger.info(str(record.available_credit))
-
 
     @api.depends('amount_total', 'order_line.price_total')
     def _compute_credit_after_sale(self):
@@ -32,10 +30,12 @@ class InheritedSaleOrder(models.Model):
                 amount += order.price_total
         record.credit_after_sale = record.available_credit - amount
 
+
     def write(self, vals):
+        partner = self.env['res.partner'].search([('id','=',self.partner_id.id)])
         if self._context.get('skip'):
             return super(InheritedSaleOrder, self).write(vals)
-        if self.state == 'draft' and self.credit_after_sale > 0 and self.partner_has_credit:
+        if self.state == 'draft' and partner.credit_enabled and partner.available_credit > 0:
             super(InheritedSaleOrder, self).write(vals)
             self.with_context(skip=True).action_confirm()
         else:
@@ -44,8 +44,11 @@ class InheritedSaleOrder(models.Model):
         
     @api.model    
     def create(self, vals):
-        res = super(InheritedSaleOrder, self).create(vals)
-        partner = self.env['res.partner'].search([('id','=',vals['partner_id'])]) 
-        if partner.credit_enabled and partner.available_credit > 0:
+        res = super(InheritedSaleOrder, self.with_context(skip=False)).create(vals)
+
+        if res.partner_has_credit and res.credit_after_sale < 0:
+            res.with_context(skip=True).write({'state': 'draft'})
+        elif res.partner_has_credit and res.credit_after_sale > 0:
             res.with_context(skip=False).action_confirm()
+
         return res

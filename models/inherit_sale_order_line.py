@@ -1,6 +1,5 @@
 from odoo import models, api
 
-
 class InheritedSaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
