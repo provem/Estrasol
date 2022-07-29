@@ -11,15 +11,9 @@ class InheritedSaleOrder(models.Model):
     partner_has_credit = fields.Boolean(
         related='partner_id.credit_enabled', readonly=True)
     available_credit = fields.Float(
-        string='Crédito Dispoible', compute='_compute_available_credit_so', readonly=True, copy=False, store=True)
+        string='Crédito Disponible', related='partner_id.available_credit', readonly=True, copy=False, store=True)
     credit_after_sale = fields.Float(
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
-
-
-    @api.depends('partner_id')
-    def _compute_available_credit_so(self):
-        for record in self:
-            record.available_credit = record.partner_id.available_credit
 
 
     @api.depends('amount_total', 'order_line.price_total')
