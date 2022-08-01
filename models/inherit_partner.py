@@ -11,7 +11,7 @@ class InheritedPartner(models.Model):
     available_credit = fields.Float(
         string='Crédito Disponible', compute='_compute_available_credit', store=True, readonly=True)
 
-    @api.depends('sale_order_ids', 'sale_order_ids.state')
+    @api.depends('sale_order_ids', 'sale_order_ids.state', 'credit_enabled', 'credit_limit')
     def _compute_available_credit(self):
         for record in self:
             available_credit = record.credit_limit - record.credit
