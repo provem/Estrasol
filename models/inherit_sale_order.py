@@ -16,7 +16,7 @@ class InheritedSaleOrder(models.Model):
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
 
 
-    @api.depends('amount_total', 'order_line.price_total')
+    @api.depends('amount_total', 'order_line.price_total', 'order_line')
     def _compute_credit_after_sale(self):
         for record in self:
             amount = 0.00
