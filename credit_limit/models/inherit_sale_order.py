@@ -31,30 +31,35 @@ class InheritedSaleOrder(models.Model):
         record.credit_after_sale = record.available_credit - amount
 
 
+    def check_permission(self):
+        return self.env.user.has_group('credit_limit.overdraft_permission')
+
+    def check_credit(self):
+        for record in self:
+            return record.credit_after_sale > 0
+
+    def action_confirm(self):
+        if self.partner_has_credit:
+            if self.check_credit or self.check_permission:
+                return super(InheritedSaleOrder, self).action_confirm()
+        else:
+            return super(InheritedSaleOrder, self).action_confirm()
+
+
+
     def write(self, vals):
         _logger.info(vals.keys())
         
-        if 'order_line' in vals.keys():
-            _logger.info(vals['order_line'][0])
-        
-        _logger.info('------------------------------------------------')
-        _logger.info(self.id)
-        _logger.info(str(self.amount_total))
-        _logger.info(str(self.credit_after_sale))
-        _logger.info('------------------------------------------------')
         if self.state == 'draft' and self.partner_has_credit:
              if 'order_line' in vals.keys():
                 if len(vals['order_line']) == 1 and vals['order_line'][0][2]['price_unit']* 1.16 > 0:
                     super(InheritedSaleOrder, self).write(vals)
                     self.with_context(skip=True).action_confirm()
         if self._context.get('skip') == True:
-            _logger.info('True')
             return super(InheritedSaleOrder, self).write(vals)
         if self._context.get('skip') == False:
-            _logger.info('False')
             return super(InheritedSaleOrder, self).write(vals)
         else:
-            _logger.info('Último')
             return super(InheritedSaleOrder, self).write(vals)
         
         
@@ -68,3 +73,5 @@ class InheritedSaleOrder(models.Model):
             res.with_context(skip=False).action_confirm()
 
         return res
+
+

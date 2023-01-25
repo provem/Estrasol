@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+    
+        <record id="overdraft_permission" model="res.groups">
+            <field name="name">Overdraft Permission</field>
+        </record>
+    
+    </data>
+    
+
+</odoo>
