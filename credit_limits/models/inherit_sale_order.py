@@ -32,7 +32,7 @@ class InheritedSaleOrder(models.Model):
 
 
     def check_permission(self):
-        return self.env.user.has_group('credit_limit.overdraft_permission')
+        return self.env.user.has_group('credit_limits.overdraft_permission')
 
     def check_credit(self):
         for record in self:
