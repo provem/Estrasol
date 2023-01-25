@@ -12,24 +12,22 @@ class InheritedSaleOrder(models.Model):
     partner_has_credit = fields.Boolean(
         related='partner_id.credit_enabled', readonly=True)
     available_credit = fields.Float(
-        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False)
+        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False, store=False)
     credit_after_sale = fields.Float(
-        string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
+        string='Crédito después de la venta', compute='_compute_credit_after_sale', store=False)
 
 
-    @api.depends('partner_id')
     def _compute_available_credit_so(self):
         for record in self:
             record.available_credit = record.partner_id.available_credit
     
     
-    @api.depends('amount_total', 'order_line.price_total', 'order_line', 'payment_term_id')
     def _compute_credit_after_sale(self):
         for record in self:
             amount = 0.00
             for order in record.order_line:
                 amount += order.price_total
-        record.credit_after_sale = record.available_credit - amount
+            record.credit_after_sale = record.available_credit - amount
 
 
     def check_permission(self):
