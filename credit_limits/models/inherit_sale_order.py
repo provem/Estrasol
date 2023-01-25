@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -42,6 +42,9 @@ class InheritedSaleOrder(models.Model):
         if self.partner_has_credit:
             if self.check_credit or self.check_permission:
                 return super(InheritedSaleOrder, self).action_confirm()
+            else:
+                return {'warning':{'title': _('Advertencia'), 'message': _('Las cortesías de un mes no deben de superar los $3000.00.')}} 
+
         else:
             return super(InheritedSaleOrder, self).action_confirm()
 
