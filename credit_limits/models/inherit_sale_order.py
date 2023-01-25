@@ -1,4 +1,5 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api
+from odoo.exceptions import UserWarning
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -35,35 +36,25 @@ class InheritedSaleOrder(models.Model):
         return self.env.user.has_group('credit_limits.overdraft_permission')
 
     def check_credit(self):
-        for record in self:
-            return record.credit_after_sale > 0
+        return self.credit_after_sale >= 0
 
     def action_confirm(self):
         if self.partner_has_credit:
-            if self.check_credit or self.check_permission:
+            if self.payment_term_id in [1,False]:
+                return super(InheritedSaleOrder, self).action_confirm()
+            if self.check_credit():
                 return super(InheritedSaleOrder, self).action_confirm()
             else:
-                return {'warning':{'title': _('Advertencia'), 'message': _('Las cortesías de un mes no deben de superar los $3000.00.')}} 
+                if self.check_permission():
+                    return super(InheritedSaleOrder, self).action_confirm()
+                else:
+                    raise UserWarning('OOOOPSS')
 
         else:
             return super(InheritedSaleOrder, self).action_confirm()
 
 
 
-    def write(self, vals):
-        _logger.info(vals.keys())
-        
-        if self.state == 'draft' and self.partner_has_credit:
-             if 'order_line' in vals.keys():
-                if len(vals['order_line']) == 1 and vals['order_line'][0][2]['price_unit']* 1.16 > 0:
-                    super(InheritedSaleOrder, self).write(vals)
-                    self.with_context(skip=True).action_confirm()
-        if self._context.get('skip') == True:
-            return super(InheritedSaleOrder, self).write(vals)
-        if self._context.get('skip') == False:
-            return super(InheritedSaleOrder, self).write(vals)
-        else:
-            return super(InheritedSaleOrder, self).write(vals)
         
         
     @api.model    

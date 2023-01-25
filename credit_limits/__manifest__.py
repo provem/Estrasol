@@ -12,8 +12,8 @@
     ],
     'data': [
         'views/inherit_partner_views.xml',
+        'security/groups.xml',
         'views/inherit_sale_order_views.xml',
-        'security/groups.xml'
     ],
     'demo': [
         ''
