@@ -12,7 +12,7 @@ class InheritedSaleOrder(models.Model):
     partner_has_credit = fields.Boolean(
         related='partner_id.credit_enabled', readonly=True)
     available_credit = fields.Float(
-        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False, store=False)
+        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False, store=True)
     credit_after_sale = fields.Float(
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=False)
 
@@ -38,7 +38,7 @@ class InheritedSaleOrder(models.Model):
 
     def action_confirm(self):
         if self.partner_has_credit:
-            if self.payment_term_id in [1,False]:
+            if self.payment_term_id.id in [1,False]:
                 return super(InheritedSaleOrder, self).action_confirm()
             if self.check_credit():
                 return super(InheritedSaleOrder, self).action_confirm()
@@ -46,8 +46,10 @@ class InheritedSaleOrder(models.Model):
                 if self.check_permission():
                     return super(InheritedSaleOrder, self).action_confirm()
                 else:
-                    raise UserError('OOOOPSS')
-
+                    raise UserError(
+                        """El cliente no tiene el crédito suficiente para realizar la compra \n
+                           el cliente cuenta con ${} de crédito y con esta compra se excede por ${}"""\
+                            .format(round(self.available_credit, 2), round(-self.credit_after_sale, 2)))
         else:
             return super(InheritedSaleOrder, self).action_confirm()
 
