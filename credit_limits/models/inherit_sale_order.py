@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserWarning
+from odoo.exceptions import UserError
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ class InheritedSaleOrder(models.Model):
     partner_has_credit = fields.Boolean(
         related='partner_id.credit_enabled', readonly=True)
     available_credit = fields.Float(
-        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False, store=True)
+        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False)
     credit_after_sale = fields.Float(
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=True)
 
@@ -23,7 +23,7 @@ class InheritedSaleOrder(models.Model):
             record.available_credit = record.partner_id.available_credit
     
     
-    @api.depends('amount_total', 'order_line.price_total', 'order_line')
+    @api.depends('amount_total', 'order_line.price_total', 'order_line', 'payment_term_id')
     def _compute_credit_after_sale(self):
         for record in self:
             amount = 0.00
@@ -48,7 +48,7 @@ class InheritedSaleOrder(models.Model):
                 if self.check_permission():
                     return super(InheritedSaleOrder, self).action_confirm()
                 else:
-                    raise UserWarning('OOOOPSS')
+                    raise UserError('OOOOPSS')
 
         else:
             return super(InheritedSaleOrder, self).action_confirm()
