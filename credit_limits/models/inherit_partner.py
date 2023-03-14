@@ -14,13 +14,11 @@ class InheritedPartner(models.Model):
     @api.depends('sale_order_ids', 'sale_order_ids.state', 'credit_enabled', 'credit_limit')
     def _compute_available_credit(self):
         for record in self:
-            available_credit = record.credit_limit - record.credit
-            # _logger.info('Partner Credit')
-            # _logger.info(str(available_credit))
+            available_credit = 0.0
             for sale_order in record.sale_order_ids:
                 if sale_order.invoice_status == 'to invoice' and sale_order.state not in ['cancel', 'draft']:
-                    available_credit -= sale_order.amount_total
-            # _logger.info('Partner Credit')
-            # _logger.info(str(self.available_credit))
-            record.available_credit = available_credit
-            # _logger.info(str(available_credit))
+                    available_credit = available_credit - sale_order.amount_total
+            record.available_credit = round(available_credit)
+
+    def get_available_credit(self):
+        return self.available_credit

@@ -19,13 +19,8 @@ class InheritedSaleOrder(models.Model):
     @api.onchange('partner_id')
     # @api.depends('partner_id')
     def _compute_available_credit_so(self):
-        _logger.info('---------sale_order-available_credit---------')
-        _logger.info(str(self.available_credit))
-        _logger.info('---------partner_id-available_credit---------')
-        _logger.info(str(self.partner_id.available_credit))
-        for record in self:
-            available_credit = record.partner_id.credit_limit - record.partner_id.credit
-            record.available_credit = available_credit
+        self.available_credit = self.partner_id.get_available_credit()
+            
     
     
     def _compute_credit_after_sale(self):
