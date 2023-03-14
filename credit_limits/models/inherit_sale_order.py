@@ -19,7 +19,8 @@ class InheritedSaleOrder(models.Model):
     @api.onchange('partner_id')
     # @api.depends('partner_id')
     def _compute_available_credit_so(self):
-        self.available_credit = self.partner_id.get_available_credit()
+        for record in self:
+            record.available_credit = record.partner_id.get_available_credit()
             
     
     

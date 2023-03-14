@@ -21,4 +21,5 @@ class InheritedPartner(models.Model):
             record.available_credit = round(available_credit)
 
     def get_available_credit(self):
-        return self.available_credit
+        for record in self:
+            return record.available_credit
