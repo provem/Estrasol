@@ -22,4 +22,5 @@ class InheritedPartner(models.Model):
 
     def get_available_credit(self):
         for record in self:
+            _logger.info(str(record.available_credit))
             return record.available_credit
