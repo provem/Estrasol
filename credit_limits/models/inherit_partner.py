@@ -16,7 +16,7 @@ class InheritedPartner(models.Model):
         for record in self:
             used_credit = 0.0
             for sale_order in record.sale_order_ids:
-                if sale_order.invoice_status == 'to invoice' and sale_order.state not in ['cancel', 'draft']:
+                if sale_order.invoice_status == 'to invoice' and sale_order.state == 'sale':
                     used_credit = used_credit + sale_order.amount_total
             record.available_credit = round(record.credit_limit - used_credit)
 
