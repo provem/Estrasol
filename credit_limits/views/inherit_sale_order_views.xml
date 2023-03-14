@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <field name="partner_has_credit" attrs="{'invisible': 1}" />
-                    <field name="available_credit" attrs="{'invisible': ['&quot;',('payment_term_id', 'in', [1,False]), ('partner_has_credit','=', False) ]}" />
+                    <field name="provem_available_credit" attrs="{'invisible': ['&quot;',('payment_term_id', 'in', [1,False]), ('partner_has_credit','=', False) ]}" />
                     <field name="credit_after_sale" attrs="{'invisible': ['&quot;',('payment_term_id', 'in', [1,False]), ('partner_has_credit','=',False) ]}" />
                 </xpath>
                 <xpath expr="//notebook" position="before">

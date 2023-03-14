@@ -8,19 +8,19 @@ class InheritedPartner(models.Model):
 
     credit_enabled = fields.Boolean(
         string='¿Aplica crédito disponible?', default=False)
-    available_credit = fields.Float(
-        string='Crédito Disponible', compute='_compute_available_credit', store=True, readonly=True)
+    provem_available_credit = fields.Float(
+        string='Crédito Disponible', compute='_compute_provem_available_credit', store=True, readonly=True)
 
     @api.depends('sale_order_ids', 'sale_order_ids.state', 'credit_enabled', 'credit_limit')
-    def _compute_available_credit(self):
+    def _compute_provem_available_credit(self):
         for record in self:
             used_credit = 0.0
             for sale_order in record.sale_order_ids:
                 if sale_order.invoice_status == 'to invoice' and sale_order.state == 'sale':
                     used_credit = used_credit + sale_order.amount_total
-            record.available_credit = round(record.credit_limit - used_credit)
+            record.provem_available_credit = round(record.credit_limit - used_credit)
 
-    def get_available_credit(self):
+    def get_provem_available_credit(self):
         for record in self:
-            _logger.info(str(record.available_credit))
-            return record.available_credit
+            _logger.info(str(record.provem_available_credit))
+            return record.provem_available_credit

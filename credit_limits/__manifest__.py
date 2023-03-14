@@ -8,7 +8,7 @@
     'license': 'LGPL-3',
     'category': '',
     'depends': [
-        'base', 'sale', 'contacts', 'sale_stock'
+        'base', 'sale', 'contacts', 'sale_stock', 'crm', 'account'
     ],
     'data': [
         'views/inherit_partner_views.xml',

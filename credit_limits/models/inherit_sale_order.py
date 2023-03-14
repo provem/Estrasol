@@ -11,16 +11,16 @@ class InheritedSaleOrder(models.Model):
 
     partner_has_credit = fields.Boolean(
         related='partner_id.credit_enabled', readonly=True)
-    available_credit = fields.Float(
-        string='Crédito Disponible', compute='_compute_available_credit_so', readonly=True, copy=False, store=True)
+    provem_available_credit = fields.Float(
+        string='Crédito Disponible', compute='_compute_provem_available_credit_so', readonly=True, copy=False, store=True)
     credit_after_sale = fields.Float(
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=False)
 
     @api.onchange('partner_id')
     # @api.depends('partner_id')
-    def _compute_available_credit_so(self):
+    def _compute_provem_available_credit_so(self):
         for record in self:
-            record.available_credit = record.partner_id.get_available_credit()
+            record.provem_available_credit = record.partner_id.get_provem_available_credit()
             
     
     
@@ -29,7 +29,7 @@ class InheritedSaleOrder(models.Model):
             amount = 0.00
             for order in record.order_line:
                 amount += order.price_total
-            record.credit_after_sale = record.available_credit - amount
+            record.credit_after_sale = record.provem_available_credit - amount
 
 
     def check_permission(self):
@@ -51,7 +51,7 @@ class InheritedSaleOrder(models.Model):
                     raise UserError(
                         """El cliente no tiene el crédito suficiente para realizar la compra \n
                            el cliente cuenta con ${} de crédito y con esta compra se excede por ${}"""\
-                            .format(round(self.available_credit, 2), round(-self.credit_after_sale, 2)))
+                            .format(round(self.provem_available_credit, 2), round(-self.credit_after_sale, 2)))
         else:
             return super(InheritedSaleOrder, self).action_confirm()
 
