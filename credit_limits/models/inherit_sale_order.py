@@ -16,7 +16,7 @@ class InheritedSaleOrder(models.Model):
     credit_after_sale = fields.Float(
         string='Crédito después de la venta', compute='_compute_credit_after_sale', store=False)
 
-
+    @api.depends('partner_id')
     def _compute_available_credit_so(self):
         for record in self:
             record.available_credit = record.partner_id.available_credit
