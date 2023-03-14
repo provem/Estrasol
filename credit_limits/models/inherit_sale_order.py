@@ -19,7 +19,14 @@ class InheritedSaleOrder(models.Model):
     @api.onchange('partner_id')
     # @api.depends('partner_id')
     def _compute_available_credit_so(self):
-        self.available_credit = self.partner_id.available_credit
+        _logger.info(str(self.available_credit))
+        _logger.info(str(self.partner_id.available_credit))
+        for record in self:
+            available_credit = record.partner_id.credit_limit - record.partner_id.credit
+            for sale_order in record.partner_id.sale_order_ids:
+                if sale_order.invoice_status == 'to invoice' and sale_order.state not in ['cancel', 'draft']:
+                    available_credit -= sale_order.amount_total
+            record.available_credit = available_credit
     
     
     def _compute_credit_after_sale(self):
